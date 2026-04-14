@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>贵州万福臻品酒业旗下餐饮单店盈利大模型</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei", sans-serif; }
+        body { background: #f5f7fa; padding: 20px; font-size:14px; }
+        .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 10px; }
+        .title { text-align: center; font-size: 24px; font-weight: bold; color: #2c5aa0; margin-bottom: 20px; }
+        .section { margin:20px 0; }
+        .section-title { font-size:16px; font-weight:bold; color:#333; margin-bottom:12px; padding-left:8px; border-left:4px solid #2c5aa0; }
+
+        .form-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; align-items: center; }
+        .form-item { flex: 1; min-width: 260px; display: flex; align-items: center; }
+        .form-item label { width: 150px; font-size:14px; color:#333; }
+        .form-item input {
+            flex:1; padding:8px 12px; border:1px solid #d0efff;
+            border-radius:6px; font-size:14px;
+        }
+        .form-item input:disabled { background:#f8f9fa; font-weight:bold; color:#222; }
+
+        .divider { height:1px; background:#e8f4f8; margin:20px 0; }
+        .grid { display:grid; grid-template-columns: repeat(2,1fr); gap:12px; margin-top:12px; }
+        @media(max-width:768px){ .grid{ grid-template-columns:1fr; } }
+
+        .panel { margin-top:20px; border:1px solid #e8f4f8; border-radius:8px; overflow:hidden; }
+        .panel-title { padding:10px 15px; background:#f5f8fa; font-weight:bold; color:#2c5aa0; }
+        .panel-item { display:flex; justify-content:space-between; padding:10px 15px; border-bottom:1px solid #f0f7fa; }
+        .panel-item:last-child { border-bottom:none; }
+        .status-tag { padding:2px 6px; border-radius:3px; font-size:12px; font-weight:bold; }
+        .tag-green { background:#d4edda; color:#155724; }
+        .tag-red { background:#f8d7da; color:#721c24; }
+        .tag-blue { background:#d1ecf1; color:#0c5460; }
+        .tag-yellow { background:#fff3cd; color:#856403; }
+        .tag-gray { background:#e9ecef; color:#666; }
+
+        .panel-item.highlight { background:#f0fff9; font-weight:bold; }
+        .panel-item.income { background:#f0fff4; }
+        .panel-item.cost { background:#fff8f9; }
+        .panel-item.target { background:#e3f2fd; }
+        .panel-item.break { background:#fff8e1; }
+        .panel-item.roi { background:#f3e5f5; }
+
+        .eval-item { padding: 12px 15px; border-bottom: 1px solid #f0f7fa; }
+        .eval-category { font-weight: bold; margin-bottom: 4px; }
+        .eval-desc { font-size: 12px; color: #666; margin-bottom: 6px; }
+        .progress-container { width: 100%; height: 12px; background: #eee; border-radius: 6px; position: relative; overflow: hidden; }
+        .progress-bar { height: 100%; border-radius: 6px; transition: width 0.3s; }
+        .eval-score { position: absolute; right: 10px; top: -18px; font-size: 14px; font-weight: bold; }
+        .eval-scale { display: flex; justify-content: space-between; font-size: 11px; color: #999; margin-top: 4px; }
+
+        .valuation-content { padding: 15px; }
+        .valuation-item { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #eee; }
+        .valuation-item:last-child { border: none; }
+        .valuation-label { font-weight: bold; color: #2c5aa0; margin-bottom: 4px; }
+        .valuation-value { color: #e63940; font-weight: bold; font-size: 16px; }
+        .valuation-suggest { font-size: 13px; color: #666; margin-top: 4px; }
+
+        .btn-group { display:flex; gap:10px; justify-content:center; margin-top:30px; }
+        .btn-group button {
+            padding:10px 20px; border:none; border-radius:6px;
+            color:#fff; cursor:pointer; font-size:14px;
+        }
+        .btn-reset { background:#95a5a6; }
+        .btn-print { background:#2c5aa0; }
+
+        @media print {
+            .btn-group{display:none!important;}
+            body{background:#fff;}
+            .container{box-shadow:none;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="printContainer">
+    <div class="title">贵州万福臻品酒业旗下餐饮单店盈利大模型</div>
+
+    <!-- 1. 基础经营数据 -->
+    <div class="section">
+        <div class="section-title">基础经营数据</div>
+        <div class="form-row">
+            <div class="form-item">
+                <label>餐桌总数（张）</label>
+                <input type="text" id="tableCount" oninput="formatInput(this);calcAll();">
+            </div>
+            <div class="form-item">
+                <label>日均翻台次数</label>
+                <input type="text" id="turnover" value="1.5" oninput="formatInput(this);calcAll();">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-item">
+                <label>每桌平均人数（人）</label>
+                <input type="text" id="peoplePerTable" value="4" oninput="formatInput(this);calcAll();">
+            </div>
+            <div class="form-item">
+                <label>堂食人均客单价（元）</label>
+                <input type="text" id="avgPrice" value="80" oninput="formatInput(this);calcAll();">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-item">
+                <label>外卖营收占比（%）</label>
+                <input type="text" id="takeawayRate" value="20" oninput="formatInput(this);calcAll();">
+            </div>
+            <div class="form-item">
+                <label>外卖平台扣点（%）</label>
+                <input type="text" id="platformFee" value="20" oninput="formatInput(this);calcAll();">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-item">
+                <label>营业面积（㎡）</label>
+                <input type="text" id="area" oninput="formatInput(this);calcAll();">
+            </div>
+            <div class="form-item">
+                <label>员工总人数（人）</label>
+                <input type="text" id="staffCount" oninput="formatInput(this);calcAll();">
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 成本数据 -->
+    <div class="section">
+        <div class="section-title">成本数据</div>
+        <div class="form-row">
+            <div class="form-item">
+                <label>月租金（元）</label>
+                <input type="text" id="rent" oninput="formatInput(this);calcAll();">
+            </div>
+            <div class="form-item">
+                <label>月总工资（元）</label>
+                <input type="text" id="salary" oninput="formatInput(this);calcAll();">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-item">
+                <label>食材综合成本率（%）</label>
+                <input type="text" id="foodCostRate" value="35" oninput="formatInput(this);calcAll();">
+            </div>
+            <div class="form-item">
+                <label>食材损耗率（%）</label>
+                <input type="text" id="lossRate" value="3" oninput="formatInput(this);calcAll();">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-item">
+                <label>月水电燃气（元）</label>
+                <input type="text" id="waterElec" oninput="formatInput(this);calcAll();">
+            </div>
+            <div class="form-item">
+                <label>月营销杂费（元）</label>
+                <input type="text" id="marketing" oninput="formatInput(this);calcAll();">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-item">
+                <label>月易耗品/洗涤（元）</label>
+                <input type="text" id="supplies" oninput="formatInput(this);calcAll();">
+            </div>
+            <div class="form-item">
+                <label>月其他固定支出（元）</label>
+                <input type="text" id="otherCost" oninput="formatInput(this);calcAll();">
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 投资与折旧 -->
+    <div class="section">
+        <div class="section-title">投资与回本测算</div>
+        <div class="form-row">
+            <div class="form-item">
+                <label>总投资额（元）</label>
+                <input type="text" id="totalInvest" oninput="formatInput(this);calcAll();">
+            </div>
+            <div class="form-item">
+                <label>装修摊销月数</label>
+                <input type="text" id="amortMonth" value="36" oninput="formatInput(this);calcAll();">
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. 自动计算结果 -->
+    <div class="panel">
+        <div class="panel-title">营收结构测算</div>
+        <div class="panel-item target"><span>日均桌数</span><span id="dayTable">0</span></div>
+        <div class="panel-item target"><span>桌均金额</span><span id="avgTablePrice">¥0</span></div>
+        <div class="panel-item target"><span>日均接待人数</span><span id="dayPeople">0</span></div>
+        <div class="panel-item target"><span>日均堂食营业额</span><span id="dayHallIncome">¥0</span></div>
+        <div class="panel-item target"><span>日均外卖营业额</span><span id="dayTakeIncome">¥0</span></div>
+        <div class="panel-item highlight"><span>日均总营业额</span><span id="dayTotalIncome">¥0</span></div>
+        <div class="panel-item highlight"><span>月总营业额</span><span id="monthIncome">¥0</span></div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-title">成本与毛利</div>
+        <div class="panel-item cost"><span>月食材总成本</span><span id="monthFoodCost">¥0</span></div>
+        <div class="panel-item cost"><span>月平台扣点成本</span><span id="monthPlatformCost">¥0</span></div>
+        <div class="panel-item cost"><span>月固定总成本</span><span id="monthFixedCost">¥0</span></div>
+        <div class="panel-item cost"><span>月总经营成本</span><span id="monthTotalCost">¥0</span></div>
+        <div class="panel-item income"><span>毛利率</span><span id="grossRate">0%</span></div>
+        <div class="panel-item income"><span>净利率</span><span id="netRate">0%</span></div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-title">盈利与保本</div>
+        <div class="panel-item highlight income"><span>月净利润</span><span id="monthNetProfit">¥0</span></div>
+        <div class="panel-item income"><span>年净利润</span><span id="yearNetProfit">¥0</span></div>
+        <div class="panel-item break"><span>月保本营业额</span><span id="breakIncome">¥0</span></div>
+        <div class="panel-item break"><span>保本日均营业额</span><span id="breakDayIncome">¥0</span></div>
+        <div class="panel-item break"><span>保本日均桌数</span><span id="breakDayTable">0桌</span></div>
+        <div class="panel-item roi"><span>投资回本周期</span><span id="paybackMonth">0个月</span></div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-title">经营效率指标</div>
+        <div class="panel-item">
+            <span>坪效（元/㎡/月）</span>
+            <span><span id="pingXiao">0</span> <span id="pingXiaoLevel" class="status-tag"></span></span>
+        </div>
+        <div class="panel-item">
+            <span>人效（元/人/月）</span>
+            <span><span id="renXiao">0</span> <span id="renXiaoLevel" class="status-tag"></span></span>
+        </div>
+        <div class="panel-item">
+            <span>桌效（元/桌/月）</span>
+            <span><span id="zhuoXiao">0</span> <span id="zhuoXiaoLevel" class="status-tag"></span></span>
+        </div>
+        <div class="panel-item">
+            <span>门店经营状态</span>
+            <span id="status" class="status-tag">待测算</span>
+        </div>
+    </div>
+
+    <!-- 5. 评估指标 -->
+    <div class="panel">
+        <div class="panel-title">评估指标</div>
+        <div class="eval-item">
+            <div class="eval-category">月营业表现</div><div class="eval-desc">每平米营业额</div>
+            <div class="progress-container"><div class="progress-bar" style="background:#4a89dc" id="progressBusiness"></div><div class="eval-score" id="scoreBusiness">0分</div></div>
+            <div class="eval-scale"><span>较差</span><span>优秀</span></div>
+        </div>
+        <div class="eval-item">
+            <div class="eval-category">成本能力</div><div class="eval-desc">成本占比水平</div>
+            <div class="progress-container"><div class="progress-bar" style="background:#8cc152" id="progressCost"></div><div class="eval-score" id="scoreCost">0分</div></div>
+            <div class="eval-scale"><span>较差</span><span>优秀</span></div>
+        </div>
+        <div class="eval-item">
+            <div class="eval-category">发展潜力</div><div class="eval-desc">利润率水平</div>
+            <div class="progress-container"><div class="progress-bar" style="background:#f6bb42" id="progressPotential"></div><div class="eval-score" id="scorePotential">0分</div></div>
+            <div class="eval-scale"><span>较差</span><span>优秀</span></div>
+        </div>
+        <div class="eval-item">
+            <div class="eval-category">市场定位</div><div class="eval-desc">桌单价与营业额</div>
+            <div class="progress-container"><div class="progress-bar" style="background:#967adc" id="progressMarket"></div><div class="eval-score" id="scoreMarket">0分</div></div>
+            <div class="eval-scale"><span>较差</span><span>优秀</span></div>
+        </div>
+        <div class="eval-item">
+            <div class="eval-category">选址装修</div><div class="eval-desc">租金占比</div>
+            <div class="progress-container"><div class="progress-bar" style="background:#e74c3c" id="progressLocation"></div><div class="eval-score" id="scoreLocation">0分</div></div>
+            <div class="eval-scale"><span>较差</span><span>优秀</span></div>
+        </div>
+        <div class="eval-item">
+            <div class="eval-category">菜品研发</div><div class="eval-desc">原材料成本占比</div>
+            <div class="progress-container"><div class="progress-bar" style="background:#d770ad" id="progressFood"></div><div class="eval-score" id="scoreFood">0分</div></div>
+            <div class="eval-scale"><span>较差</span><span>优秀</span></div>
+        </div>
+        <div class="eval-item">
+            <div class="eval-category">团队建设</div><div class="eval-desc">人工成本占比</div>
+            <div class="progress-container"><div class="progress-bar" style="background:#3bafda" id="progressTeam"></div><div class="eval-score" id="scoreTeam">0分</div></div>
+            <div class="eval-scale"><span>较差</span><span>优秀</span></div>
+        </div>
+        <div class="eval-item">
+            <div class="eval-category">成本控制</div><div class="eval-desc">综合成本效率</div>
+            <div class="progress-container"><div class="progress-bar" style="background:#f0ad4e" id="progressControl"></div><div class="eval-score" id="scoreControl">0分</div></div>
+            <div class="eval-scale"><span>较差</span><span>优秀</span></div>
+        </div>
+    </div>
+
+    <!-- 6. 投资价值分析 -->
+    <div class="panel">
+        <div class="panel-title">投资价值分析</div>
+        <div class="valuation-content">
+            <div class="valuation-item">
+                <div class="valuation-label">1. 餐厅参考估值</div>
+                <div class="valuation-value" id="valRestaurant">¥0</div>
+                <div class="valuation-suggest">计算公式：年净利润 × 10倍行业估值</div>
+            </div>
+            <div class="valuation-item">
+                <div class="valuation-label">2. 单平米估值</div>
+                <div class="valuation-value" id="valPerSqm">¥0/㎡</div>
+                <div class="valuation-suggest">计算公式：餐厅参考估值 ÷ 营业面积</div>
+            </div>
+            <div class="valuation-item">
+                <div class="valuation-label">3. 投资回收周期</div>
+                <div class="valuation-value" id="valPayback">0个月</div>
+                <div class="valuation-suggest">计算公式：总投资额 ÷ 月净利润</div>
+            </div>
+            <div class="valuation-item">
+                <div class="valuation-label">4. 经营建议</div>
+                <div class="valuation-suggest" id="suggestion">门店目前亏损，建议优化成本结构，提升翻台率与客单价，优先降低租金/人工等固定成本。</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 按钮 -->
+    <div class="btn-group">
+        <button class="btn-reset" onclick="resetAll()">重置</button>
+        <button class="btn-print" onclick="window.print()">打印</button>
+    </div>
+</div>
+
+<script>
+// 输入框自动千分位
+function formatInput(el) {
+    let val = el.value.replace(/,/g, '');
+    if(isNaN(val) || val === '') return;
+    el.value = parseFloat(val).toLocaleString('zh-CN');
+}
+
+// 读取数字
+function num(id){
+    let v = document.getElementById(id).value.trim().replace(/,/g, '');
+    return parseFloat(v) || 0;
+}
+
+// 千分位格式化
+function fmtNum(n) {
+    return n.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+// 评级设置
+function setLevel(tagId, val, type) {
+    const el = document.getElementById(tagId);
+    let level = '';
+    let cls = 'status-tag ';
+
+    if (type === 'pingXiao') {
+        if (val >= 3000) { level = '优秀'; cls += 'tag-green'; }
+        else if (val >= 2000) { level = '良好'; cls += 'tag-blue'; }
+        else if (val >= 1200) { level = '合格'; cls += 'tag-yellow'; }
+        else { level = '较差'; cls += 'tag-gray'; }
+    }
+
+    if (type === 'renXiao') {
+        if (val >= 50000) { level = '优秀'; cls += 'tag-green'; }
+        else if (val >= 30000) { level = '良好'; cls += 'tag-blue'; }
+        else if (val >= 18000) { level = '合格'; cls += 'tag-yellow'; }
+        else { level = '较差'; cls += 'tag-gray'; }
+    }
+
+    if (type === 'zhuoXiao') {
+        if (val >= 30000) { level = '优秀'; cls += 'tag-green'; }
+        else if (val >= 20000) { level = '良好'; cls += 'tag-blue'; }
+        else if (val >= 12000) { level = '合格'; cls += 'tag-yellow'; }
+        else { level = '较差'; cls += 'tag-gray'; }
+    }
+
+    el.textContent = level;
+    el.className = cls;
+}
+
+// 主计算
+function calcAll(){
+    const tableCount = num('tableCount');
+    const turnover = num('turnover');
+    const peoplePerTable = num('peoplePerTable');
+    const avgPrice = num('avgPrice');
+    const takeawayRate = num('takeawayRate');
+    const platformFee = num('platformFee');
+    const area = num('area');
+    const staffCount = num('staffCount');
+
+    const rent = num('rent');
+    const salary = num('salary');
+    const foodCostRate = num('foodCostRate');
+    const lossRate = num('lossRate');
+    const waterElec = num('waterElec');
+    const marketing = num('marketing');
+    const supplies = num('supplies');
+    const otherCost = num('otherCost');
+
+    const totalInvest = num('totalInvest');
+    const amortMonth = num('amortMonth');
+
+    const dayTable = tableCount * turnover;
+    const dayPeople = dayTable * peoplePerTable;
+    const dayHallIncome = dayPeople * avgPrice;
+    const dayTakeIncome = dayHallIncome * takeawayRate / 100 / (1 - takeawayRate / 100);
+    const dayTotalIncome = dayHallIncome + dayTakeIncome;
+    const monthIncome = dayTotalIncome * 30;
+
+    const avgTablePrice = peoplePerTable * avgPrice;
+
+    const totalFoodCostRate = foodCostRate + lossRate;
+    const monthFoodCost = monthIncome * totalFoodCostRate / 100;
+    const monthPlatformCost = monthIncome * takeawayRate / 100 * platformFee / 100;
+    const amortCost = totalInvest / amortMonth;
+    const fixedCost = rent + salary + waterElec + marketing + supplies + otherCost + amortCost;
+    const totalCost = monthFoodCost + monthPlatformCost + fixedCost;
+
+    const monthNetProfit = monthIncome - totalCost;
+    const yearNetProfit = monthNetProfit * 12;
+
+    const variableRate = totalFoodCostRate / 100 + (takeawayRate / 100) * (platformFee / 100);
+    const breakIncome = fixedCost / (1 - variableRate);
+    const breakDayIncome = breakIncome / 30;
+    const breakDayTable = breakDayIncome / (avgPrice * peoplePerTable) / turnover;
+
+    const paybackMonth = monthNetProfit > 0 ? totalInvest / monthNetProfit : 999;
+
+    const pingXiao = area > 0 ? monthIncome / area : 0;
+    const renXiao = staffCount > 0 ? monthIncome / staffCount : 0;
+    const zhuoXiao = tableCount > 0 ? monthIncome / tableCount : 0;
+
+    const grossRate = 100 - (totalFoodCostRate + (takeawayRate * platformFee / 100));
+    const netRate = monthIncome > 0 ? (monthNetProfit / monthIncome) * 100 : 0;
+
+    let status = '', cls = '';
+    if(monthNetProfit > 0){ status = '盈利'; cls = 'status-tag tag-green'; }
+    else if(monthNetProfit < 0){ status = '亏损'; cls = 'status-tag tag-red'; }
+    else { status = '持平'; cls = 'status-tag tag-blue'; }
+
+    function fmt(m){ return '¥'+m.toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+    document.getElementById('dayTable').textContent = dayTable.toFixed(1)+' 桌';
+    document.getElementById('avgTablePrice').textContent = fmt(avgTablePrice);
+    document.getElementById('dayPeople').textContent = dayPeople.toFixed(0)+' 人';
+    document.getElementById('dayHallIncome').textContent = fmt(dayHallIncome);
+    document.getElementById('dayTakeIncome').textContent = fmt(dayTakeIncome);
+    document.getElementById('dayTotalIncome').textContent = fmt(dayTotalIncome);
+    document.getElementById('monthIncome').textContent = fmt(monthIncome);
+
+    document.getElementById('monthFoodCost').textContent = fmt(monthFoodCost);
+    document.getElementById('monthPlatformCost').textContent = fmt(monthPlatformCost);
+    document.getElementById('monthFixedCost').textContent = fmt(fixedCost);
+    document.getElementById('monthTotalCost').textContent = fmt(totalCost);
+    document.getElementById('grossRate').textContent = grossRate.toFixed(1)+'%';
+    document.getElementById('netRate').textContent = netRate.toFixed(1)+'%';
+
+    document.getElementById('monthNetProfit').textContent = fmt(monthNetProfit);
+    document.getElementById('yearNetProfit').textContent = fmt(yearNetProfit);
+    document.getElementById('breakIncome').textContent = fmt(breakIncome);
+    document.getElementById('breakDayIncome').textContent = fmt(breakDayIncome);
+    document.getElementById('breakDayTable').textContent = breakDayTable.toFixed(1)+' 桌';
+    document.getElementById('paybackMonth').textContent = paybackMonth < 999 ? paybackMonth.toFixed(1)+'个月' : '不回本';
+
+    // 经营效率 + 评级
+    document.getElementById('pingXiao').textContent = fmtNum(pingXiao);
+    document.getElementById('renXiao').textContent = fmtNum(renXiao);
+    document.getElementById('zhuoXiao').textContent = fmtNum(zhuoXiao);
+
+    setLevel('pingXiaoLevel', pingXiao, 'pingXiao');
+    setLevel('renXiaoLevel', renXiao, 'renXiao');
+    setLevel('zhuoXiaoLevel', zhuoXiao, 'zhuoXiao');
+
+    document.getElementById('status').textContent = status;
+    document.getElementById('status').className = cls;
+
+    // 八大指标
+    const businessScore = Math.min(10, Math.max(0, pingXiao / 200));
+    const totalCostRate = monthIncome > 0 ? (totalCost / monthIncome) * 100 : 100;
+    const costScore = Math.min(10, Math.max(0, (100 - totalCostRate) / 4));
+    const potentialScore = Math.min(10, Math.max(0, netRate / 1.5));
+    const marketScore = Math.min(10, Math.max(0, avgTablePrice / 30));
+    const rentRate = monthIncome > 0 ? (rent / monthIncome) * 100 : 100;
+    const locationScore = Math.min(10, Math.max(0, (20 - rentRate) / 1));
+    const foodScore = Math.min(10, Math.max(0, (50 - totalFoodCostRate) / 1.5));
+    const laborRate = monthIncome > 0 ? (salary / monthIncome) * 100 : 100;
+    const teamScore = Math.min(10, Math.max(0, (30 - laborRate) / 1));
+    const fixedRate = monthIncome > 0 ? (fixedCost / monthIncome) * 100 : 100;
+    const controlScore = Math.min(10, Math.max(0, (60 - fixedRate) / 3));
+
+    function setProgress(barId, scoreId, score){
+        const bar = document.getElementById(barId);
+        const scoreEl = document.getElementById(scoreId);
+        const width = Math.min(100, Math.max(0, score * 10));
+        bar.style.width = width + '%';
+        scoreEl.textContent = score.toFixed(0) + '分';
+    }
+
+    setProgress('progressBusiness', 'scoreBusiness', businessScore);
+    setProgress('progressCost', 'scoreCost', costScore);
+    setProgress('progressPotential', 'scorePotential', potentialScore);
+    setProgress('progressMarket', 'scoreMarket', marketScore);
+    setProgress('progressLocation', 'scoreLocation', locationScore);
+    setProgress('progressFood', 'scoreFood', foodScore);
+    setProgress('progressTeam', 'scoreTeam', teamScore);
+    setProgress('progressControl', 'scoreControl', controlScore);
+
+    // 投资估值
+    const restaurantVal = yearNetProfit * 10;
+    document.getElementById('valRestaurant').textContent = fmt(restaurantVal);
+    const perSqmVal = area > 0 ? restaurantVal / area : 0;
+    document.getElementById('valPerSqm').textContent = fmt(perSqmVal) + '/㎡';
+    document.getElementById('valPayback').textContent = paybackMonth < 999 ? paybackMonth.toFixed(1)+'个月' : '不回本';
+
+    let suggestion = '';
+    if(monthNetProfit > 0){
+        if(paybackMonth < 24) suggestion = '门店盈利表现优秀，回本周期短，可考虑扩张或升级菜品，提升品牌溢价。';
+        else if(paybackMonth < 36) suggestion = '门店健康盈利，建议优化成本结构，提升坪效与客单价，缩短回本周期。';
+        else suggestion = '门店盈利但回本周期较长，建议控制固定成本，提升翻台率与外卖占比。';
+    } else if(monthNetProfit < 0){
+        suggestion = '门店目前亏损，建议优化成本结构，提升翻台率与客单价，优先降低租金/人工等固定成本。';
+    } else {
+        suggestion = '门店持平运营，建议提升客单价与翻台率，优化成本，实现盈利。';
+    }
+    document.getElementById('suggestion').textContent = suggestion;
+}
+
+// 重置
+function resetAll(){
+    document.querySelectorAll('input').forEach(i=>i.value='');
+    calcAll();
+}
+
+window.onload = () => calcAll();
+</script>
+</body>
+</html>
