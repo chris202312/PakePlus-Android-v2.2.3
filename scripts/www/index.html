@@ -2,33 +2,34 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <!-- 核心：手机自适应关键配置 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>贵州万福臻品酒业旗下餐饮单店盈利大模型</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei", sans-serif; }
-        body { background: #f5f7fa; padding: 20px; font-size:14px; }
-        .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 10px; }
-        .title { text-align: center; font-size: 24px; font-weight: bold; color: #2c5aa0; margin-bottom: 20px; }
-        .section { margin:20px 0; }
-        .section-title { font-size:16px; font-weight:bold; color:#333; margin-bottom:12px; padding-left:8px; border-left:4px solid #2c5aa0; }
+        body { background: #f5f7fa; padding: 10px; font-size:14px; }
+        .container { max-width: 100%; margin: 0 auto; background: #fff; padding: 15px; border-radius: 10px; }
+        .title { text-align: center; font-size: 20px; font-weight: bold; color: #2c5aa0; margin-bottom: 15px; line-height:1.3; }
+        .section { margin:15px 0; }
+        .section-title { font-size:16px; font-weight:bold; color:#333; margin-bottom:10px; padding-left:8px; border-left:4px solid #2c5aa0; }
 
-        .form-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; align-items: center; }
-        .form-item { flex: 1; min-width: 260px; display: flex; align-items: center; }
-        .form-item label { width: 150px; font-size:14px; color:#333; }
+        .form-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; align-items: center; }
+        .form-item { flex: 1; min-width: 100%; display: flex; align-items: center; }
+        .form-item label { width: 130px; font-size:14px; color:#333; }
         .form-item input {
-            flex:1; padding:8px 12px; border:1px solid #d0efff;
-            border-radius:6px; font-size:14px;
+            flex:1; padding:10px 12px; border:1px solid #d0efff;
+            border-radius:6px; font-size:15px;
         }
         .form-item input:disabled { background:#f8f9fa; font-weight:bold; color:#222; }
 
-        .divider { height:1px; background:#e8f4f8; margin:20px 0; }
-        .grid { display:grid; grid-template-columns: repeat(2,1fr); gap:12px; margin-top:12px; }
-        @media(max-width:768px){ .grid{ grid-template-columns:1fr; } }
+        .divider { height:1px; background:#e8f4f8; margin:15px 0; }
+        .grid { display:grid; grid-template-columns: 1fr; gap:10px; margin-top:10px; }
 
-        .panel { margin-top:20px; border:1px solid #e8f4f8; border-radius:8px; overflow:hidden; }
-        .panel-title { padding:10px 15px; background:#f5f8fa; font-weight:bold; color:#2c5aa0; }
-        .panel-item { display:flex; justify-content:space-between; padding:10px 15px; border-bottom:1px solid #f0f7fa; }
+        .panel { margin-top:15px; border:1px solid #e8f4f8; border-radius:8px; overflow:hidden; }
+        .panel-title { padding:10px 12px; background:#f5f8fa; font-weight:bold; color:#2c5aa0; font-size:15px; }
+        .panel-item { display:flex; justify-content:space-between; padding:10px 12px; border-bottom:1px solid #f0f7fa; font-size:14px; }
         .panel-item:last-child { border-bottom:none; }
-        .status-tag { padding:2px 6px; border-radius:3px; font-size:12px; font-weight:bold; }
+        .status-tag { padding:3px 6px; border-radius:3px; font-size:12px; font-weight:bold; }
         .tag-green { background:#d4edda; color:#155724; }
         .tag-red { background:#f8d7da; color:#721c24; }
         .tag-blue { background:#d1ecf1; color:#0c5460; }
@@ -42,25 +43,25 @@
         .panel-item.break { background:#fff8e1; }
         .panel-item.roi { background:#f3e5f5; }
 
-        .eval-item { padding: 12px 15px; border-bottom: 1px solid #f0f7fa; }
-        .eval-category { font-weight: bold; margin-bottom: 4px; }
+        .eval-item { padding: 10px 12px; border-bottom: 1px solid #f0f7fa; }
+        .eval-category { font-weight: bold; margin-bottom: 4px; font-size:14px; }
         .eval-desc { font-size: 12px; color: #666; margin-bottom: 6px; }
         .progress-container { width: 100%; height: 12px; background: #eee; border-radius: 6px; position: relative; overflow: hidden; }
         .progress-bar { height: 100%; border-radius: 6px; transition: width 0.3s; }
         .eval-score { position: absolute; right: 10px; top: -18px; font-size: 14px; font-weight: bold; }
         .eval-scale { display: flex; justify-content: space-between; font-size: 11px; color: #999; margin-top: 4px; }
 
-        .valuation-content { padding: 15px; }
-        .valuation-item { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #eee; }
+        .valuation-content { padding: 12px; }
+        .valuation-item { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #eee; }
         .valuation-item:last-child { border: none; }
-        .valuation-label { font-weight: bold; color: #2c5aa0; margin-bottom: 4px; }
-        .valuation-value { color: #e63940; font-weight: bold; font-size: 16px; }
-        .valuation-suggest { font-size: 13px; color: #666; margin-top: 4px; }
+        .valuation-label { font-weight: bold; color: #2c5aa0; margin-bottom: 4px; font-size:14px; }
+        .valuation-value { color: #e63940; font-weight: bold; font-size: 15px; }
+        .valuation-suggest { font-size: 13px; color: #666; margin-top: 4px; line-height:1.4; }
 
-        .btn-group { display:flex; gap:10px; justify-content:center; margin-top:30px; }
+        .btn-group { display:flex; gap:12px; justify-content:center; margin-top:20px; }
         .btn-group button {
-            padding:10px 20px; border:none; border-radius:6px;
-            color:#fff; cursor:pointer; font-size:14px;
+            padding:12px 20px; border:none; border-radius:6px;
+            color:#fff; cursor:pointer; font-size:15px; flex:1;
         }
         .btn-reset { background:#95a5a6; }
         .btn-print { background:#2c5aa0; }
@@ -85,6 +86,8 @@
                 <label>餐桌总数（张）</label>
                 <input type="text" id="tableCount" oninput="formatInput(this);calcAll();">
             </div>
+        </div>
+        <div class="form-row">
             <div class="form-item">
                 <label>日均翻台次数</label>
                 <input type="text" id="turnover" value="1.5" oninput="formatInput(this);calcAll();">
@@ -95,6 +98,8 @@
                 <label>每桌平均人数（人）</label>
                 <input type="text" id="peoplePerTable" value="4" oninput="formatInput(this);calcAll();">
             </div>
+        </div>
+        <div class="form-row">
             <div class="form-item">
                 <label>堂食人均客单价（元）</label>
                 <input type="text" id="avgPrice" value="80" oninput="formatInput(this);calcAll();">
@@ -105,6 +110,8 @@
                 <label>外卖营收占比（%）</label>
                 <input type="text" id="takeawayRate" value="20" oninput="formatInput(this);calcAll();">
             </div>
+        </div>
+        <div class="form-row">
             <div class="form-item">
                 <label>外卖平台扣点（%）</label>
                 <input type="text" id="platformFee" value="20" oninput="formatInput(this);calcAll();">
@@ -115,6 +122,8 @@
                 <label>营业面积（㎡）</label>
                 <input type="text" id="area" oninput="formatInput(this);calcAll();">
             </div>
+        </div>
+        <div class="form-row">
             <div class="form-item">
                 <label>员工总人数（人）</label>
                 <input type="text" id="staffCount" oninput="formatInput(this);calcAll();">
@@ -130,6 +139,8 @@
                 <label>月租金（元）</label>
                 <input type="text" id="rent" oninput="formatInput(this);calcAll();">
             </div>
+        </div>
+        <div class="form-row">
             <div class="form-item">
                 <label>月总工资（元）</label>
                 <input type="text" id="salary" oninput="formatInput(this);calcAll();">
@@ -140,6 +151,8 @@
                 <label>食材综合成本率（%）</label>
                 <input type="text" id="foodCostRate" value="35" oninput="formatInput(this);calcAll();">
             </div>
+        </div>
+        <div class="form-row">
             <div class="form-item">
                 <label>食材损耗率（%）</label>
                 <input type="text" id="lossRate" value="3" oninput="formatInput(this);calcAll();">
@@ -150,6 +163,8 @@
                 <label>月水电燃气（元）</label>
                 <input type="text" id="waterElec" oninput="formatInput(this);calcAll();">
             </div>
+        </div>
+        <div class="form-row">
             <div class="form-item">
                 <label>月营销杂费（元）</label>
                 <input type="text" id="marketing" oninput="formatInput(this);calcAll();">
@@ -160,6 +175,8 @@
                 <label>月易耗品/洗涤（元）</label>
                 <input type="text" id="supplies" oninput="formatInput(this);calcAll();">
             </div>
+        </div>
+        <div class="form-row">
             <div class="form-item">
                 <label>月其他固定支出（元）</label>
                 <input type="text" id="otherCost" oninput="formatInput(this);calcAll();">
@@ -175,6 +192,8 @@
                 <label>总投资额（元）</label>
                 <input type="text" id="totalInvest" oninput="formatInput(this);calcAll();">
             </div>
+        </div>
+        <div class="form-row">
             <div class="form-item">
                 <label>装修摊销月数</label>
                 <input type="text" id="amortMonth" value="36" oninput="formatInput(this);calcAll();">
